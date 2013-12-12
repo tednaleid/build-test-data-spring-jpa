@@ -1,0 +1,65 @@
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'idea'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // spring/jpa/hibernate
+    compile 'org.springframework:spring-core:3.2.5.RELEASE'
+    compile 'org.springframework:spring-context:3.2.5.RELEASE'
+    compile 'org.springframework:spring-test:3.2.5.RELEASE'
+    compile 'org.springframework.data:spring-data-jpa:1.4.2.RELEASE'
+    compile 'org.hibernate:hibernate-entitymanager:4.2.8.Final'
+
+    // database
+
+    compile 'org.hsqldb:hsqldb:2.3.1'
+    compile 'commons-dbcp:commons-dbcp:1.4'
+
+    // logging
+    compile 'log4j:log4j:1.2.17'
+    compile 'org.slf4j:slf4j-log4j12:1.7.5'
+
+    // groovy for testing
+    testCompile 'org.codehaus.groovy:groovy-all:2.2.1'
+    testCompile 'junit:junit:4.11'
+
+}
+
+test {
+  testLogging.showStandardStreams = true
+  beforeTest { descriptor ->
+     logger.lifecycle("Running test: " + descriptor)
+  }
+}
+
+task createSourceDirs(description : 'Create empty source directories for all defined sourceSets') << {
+    sourceSets*.allSource.srcDirs.flatten().each { File sourceDirectory ->
+        if (!sourceDirectory.exists()) {
+            println "Making $sourceDirectory"
+            sourceDirectory.mkdirs()
+        }
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.9'
+}
+
+idea {
+    project {
+        jdkName = '1.7'
+        ipr {
+            withXml { provider ->
+                provider.node.component.find { it.@name == 'VcsDirectoryMappings' }.mapping.@vcs = 'Git'
+            }
+        }
+    }
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
