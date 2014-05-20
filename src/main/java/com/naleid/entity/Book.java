@@ -16,6 +16,9 @@ public class Book {
     @Enumerated(EnumType.STRING)
     private Language language;
 
+    @ManyToOne
+    private Author author;
+
     public long getId() {
         return id;
     }
@@ -46,5 +49,13 @@ public class Book {
 
     public void setLanguage(Language language) {
         this.language = language;
+    }
+
+    public Author getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(Author author) {
+        this.author = author;
     }
 }
